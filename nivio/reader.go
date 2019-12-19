@@ -50,6 +50,26 @@ func (stream *Reader) ReadStruct(data interface{}) error {
 	return binary.Read(stream.uw, binary.LittleEndian, data)
 }
 
+// ReadUInt8 Reads the int from the stream
+func (stream *Reader) ReadUInt8() (uint8, error) {
+	var num uint8
+	err := binary.Read(stream.uw, binary.LittleEndian, &num)
+	if err != nil {
+		return 0, err
+	}
+	return num, nil
+}
+
+// ReadUInt32 Reads the int from the stream
+func (stream *Reader) ReadUInt32() (uint32, error) {
+	var num uint32
+	err := binary.Read(stream.uw, binary.LittleEndian, &num)
+	if err != nil {
+		return 0, err
+	}
+	return num, nil
+}
+
 // ReadUInt64 Reads the int from the stream
 func (stream *Reader) ReadUInt64() (uint64, error) {
 	var num uint64

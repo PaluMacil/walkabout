@@ -50,6 +50,16 @@ func (stream *Writer) WriteStruct(data interface{}) error {
 	return binary.Write(stream.uw, binary.LittleEndian, data)
 }
 
+// WriteUInt8 Writes an unsigned eight bit integer into the stream
+func (stream *Writer) WriteUInt8(num uint8) error {
+	return binary.Write(stream.uw, binary.LittleEndian, &num)
+}
+
+// WriteUInt32 Writes an unsigned thirtytwo bit integer into the stream
+func (stream *Writer) WriteUInt32(num uint32) error {
+	return binary.Write(stream.uw, binary.LittleEndian, &num)
+}
+
 // WriteUInt64 Writes an unsigned sixtyfour bit integer into the stream
 func (stream *Writer) WriteUInt64(num uint64) error {
 	return binary.Write(stream.uw, binary.LittleEndian, &num)
