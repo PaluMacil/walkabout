@@ -19,33 +19,38 @@ func NewWriter(sourceWriter io.Writer) *Writer {
 }
 
 // Flush Flushes the stream
-func (stream *Writer) Flush(){
-	stream.uw.Flush()
+func (stream *Writer) Flush() error {
+	return stream.uw.Flush()
 }
 
-func (stream *Writer) Write(p []byte) (n int, err error){
-	return stream.WriteBytes(p)
+func (stream *Writer) Write(p []byte) (n int, err error) {
+	return stream.uw.Write(p)
 }
 
 // WriteBytes Writes the given slice of bytes into the stream
-func (stream *Writer) WriteBytes(bytes []byte) (n int, err error) {
-	return stream.uw.Write(bytes)
+func (stream *Writer) WriteBytes(bytes []byte) error {
+	_, error := stream.uw.Write(bytes)
+	return error
 }
 
 // WriteString Writes the string into the stream
-func (stream *Writer) WriteString(str string) {
+func (stream *Writer) WriteString(str string) error {
 	// Write the len
-	stream.WriteUInt64(uint64(len(str)))
+	error := stream.WriteUInt64(uint64(len(str)))
+	if error != nil {
+		return error
+	}
+
 	// Get the bytes
-	stream.WriteBytes([]byte(str))
+	return stream.WriteBytes([]byte(str))
 }
 
 // WriteStruct writes the struct!
-func (stream *Writer) WriteStruct(data interface{}) {
-	binary.Write(stream.uw, binary.LittleEndian, data)
+func (stream *Writer) WriteStruct(data interface{}) error {
+	return binary.Write(stream.uw, binary.LittleEndian, data)
 }
 
 // WriteUInt64 Writes an unsigned sixtyfour bit integer into the stream
-func (stream *Writer) WriteUInt64(num uint64) {
-	binary.Write(stream.uw, binary.LittleEndian, &num)
+func (stream *Writer) WriteUInt64(num uint64) error {
+	return binary.Write(stream.uw, binary.LittleEndian, &num)
 }
