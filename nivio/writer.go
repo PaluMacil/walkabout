@@ -36,9 +36,9 @@ func (stream *Writer) WriteBytes(bytes []byte) error {
 // WriteString Writes the string into the stream
 func (stream *Writer) WriteString(str string) error {
 	// Write the len
-	error := stream.WriteUInt64(uint64(len(str)))
-	if error != nil {
-		return error
+	err := stream.WriteUInt64(uint64(len(str)))
+	if err != nil {
+		return err
 	}
 
 	// Get the bytes
