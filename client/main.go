@@ -16,7 +16,7 @@ func update(screen *ebiten.Image) error {
 }
 
 func main() {
-	if err := ebiten.Run(update, 320, 240, 2, "Hello, World!"); err != nil {
+	if err := ebiten.Run(update, 1024, 768, 1, "Hello, World!"); err != nil {
 		log.Fatal(err)
 	}
 }
