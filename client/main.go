@@ -30,7 +30,7 @@ func (ent *entity) WriteTo(stream *nivio.Writer) {
 }
 
 func (ent *entity) ReadFrom(stream *nivio.Reader) {
-	ent.Name = stream.ReadString()
+	ent.Name, _ = stream.ReadString()
 	stream.ReadStruct(&ent.Position)
 }
 
