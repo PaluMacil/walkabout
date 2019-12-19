@@ -1,3 +1,4 @@
 /.idea
 *.exe
 client/debug
+client/__debug_bin

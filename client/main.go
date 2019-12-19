@@ -47,11 +47,11 @@ func main() {
 	buff := &bytes.Buffer{}
 
 	sendMessage(buff)
-	readMessage(buff)
+	ent := readMessage(buff)
 
-	// if err := ebiten.Run(update, 1024, 768, 1, "Hello, World!"); err != nil {
-	// 	log.Fatal(err)
-	// }
+	if err := ebiten.Run(update, 1024, 768, 1, ent.Name); err != nil {
+		log.Fatal(err)
+	}
 }
 
 func sendMessage(sourceWriter io.Writer) {
@@ -60,7 +60,7 @@ func sendMessage(sourceWriter io.Writer) {
 	}
 
 	ent := entity{
-		Name: "Bob",
+		Name: "This is the title of the window",
 		Position: position{
 			X: 12,
 			Y: 13,
@@ -80,7 +80,7 @@ func sendMessage(sourceWriter io.Writer) {
 	stream.Flush()
 }
 
-func readMessage(sourceReader io.Reader) {
+func readMessage(sourceReader io.Reader) entity {
 
 	// Create the reader
 	stream := nivio.NewReader(sourceReader)
@@ -93,6 +93,6 @@ func readMessage(sourceReader io.Reader) {
 	ent := entity{}
 	ent.ReadFrom(stream)
 
-	log.Print("")
+	return ent
 
 }
