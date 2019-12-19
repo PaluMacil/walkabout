@@ -5,7 +5,7 @@ import (
 	"io"
 	"log"
 
-	"github.com/PaluMacil/walkabout/client/nivio"
+	"github.com/PaluMacil/walkabout/nivio"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
