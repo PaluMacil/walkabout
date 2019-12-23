@@ -1,8 +1,11 @@
 package message
 
 import (
-	"github.com/PaluMacil/walkabout/nivio"
+	"bytes"
+	"encoding/gob"
 	"github.com/google/uuid"
+	"log"
+	"net"
 )
 
 type PlayerActionRequest struct {
@@ -11,55 +14,47 @@ type PlayerActionRequest struct {
 	ClientCommandID uint8
 }
 
-// NetworkWrite should have inherited the comment from the interface but because there is no way to know which interface it came from, it wants another comment. So here that it. Yay.
-func (playerActionRequest *PlayerActionRequest) NetworkWrite(stream *nivio.Writer) error {
-	// Write session ID
-	err := stream.WriteBytes(playerActionRequest.SessionID[:])
-	if err != nil {
-		return err
+func (z PlayerActionRequest) Envelope(conn net.Conn) Envelope {
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	if err := enc.Encode(z); err != nil {
+		log.Println("Could not encode PlayerActionRequest")
 	}
-
-	// Write command ID
-	err = stream.WriteUInt32(playerActionRequest.CommandID)
-	if err != nil {
-		return err
+	messageBytes := buf.Bytes()
+	return Envelope{
+		Conn: conn,
+		Raw: Raw{
+			Header: Header{
+				ProtocolVersion: CurrentProtocolVersion,
+				MessageType:     TypePlayerActionRequest,
+				Length:          uint16(len(messageBytes)),
+			},
+			MessageBytes: messageBytes,
+		},
 	}
-
-	// Write the client command ID
-	err = stream.WriteUInt8(playerActionRequest.ClientCommandID)
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// NetworkRead should have inherited the comment from the interface but because there is no way to know which interface it came from, it wants another comment. So here that it. Yay.
-func (playerActionRequest *PlayerActionRequest) NetworkRead(stream *nivio.Reader) error {
-	// Read session ID
-	uuidBytes, err := stream.ReadBytes(16)
-	if err != nil {
-		return err
-	}
-	// Set the session ID
-	copy(playerActionRequest.SessionID[:], uuidBytes)
-
-	// Read the command ID
-	playerActionRequest.CommandID, err = stream.ReadUInt32()
-	if err != nil {
-		return err
-	}
-
-	// Read the client command ID
-	playerActionRequest.ClientCommandID, err = stream.ReadUInt8()
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 type PlayerActionResponse struct {
 	ClientCommandID uint8
 	Result          interface{}
+}
+
+func (z PlayerActionResponse) Envelope(conn net.Conn) Envelope {
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	if err := enc.Encode(z); err != nil {
+		log.Println("Could not encode PlayerActionResponse")
+	}
+	messageBytes := buf.Bytes()
+	return Envelope{
+		Conn: conn,
+		Raw: Raw{
+			Header: Header{
+				ProtocolVersion: CurrentProtocolVersion,
+				MessageType:     TypePlayerActionResponse,
+				Length:          uint16(len(messageBytes)),
+			},
+			MessageBytes: messageBytes,
+		},
+	}
 }
