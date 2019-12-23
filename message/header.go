@@ -7,7 +7,7 @@ import (
 
 var CurrentProtocolVersion = uint8(0)
 
-// Header should have a comment
+// Header starts every message with a simple preamble
 type Header struct {
 	ProtocolVersion uint8
 	MessageType     Type
