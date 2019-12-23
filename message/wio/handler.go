@@ -5,6 +5,7 @@ import (
 	"encoding/gob"
 	"github.com/PaluMacil/walkabout/message"
 	"github.com/PaluMacil/walkabout/server/auth"
+	"io"
 	"log"
 	"net"
 )
@@ -28,8 +29,13 @@ func (t TCPHandler) receiveMessage(session message.Session) {
 	for {
 		header := message.GetHeader(session.Conn)
 		messageBytes := make([]byte, header.Length)
-		if _, err := session.Conn.Read(messageBytes); err != nil {
+		_, err := session.Conn.Read(messageBytes)
+		if err != nil && err != io.EOF {
 			log.Println("Failed to read from connection: ", err)
+			break
+		} else if err == io.EOF {
+			log.Println("Connection closed for session ", session.SessionID.String())
+			break
 		}
 		buf := bytes.NewBuffer(messageBytes)
 		dec := gob.NewDecoder(buf)
@@ -38,7 +44,7 @@ func (t TCPHandler) receiveMessage(session message.Session) {
 		switch header.MessageType {
 		case message.TypeLoginRequest:
 			var m message.LoginRequest
-			if err := dec.Decode(m); err != nil {
+			if err := dec.Decode(&m); err != nil {
 				log.Println("Could not decode LoginRequest message: ", err)
 			}
 			log.Println("Got LoginRequest")
