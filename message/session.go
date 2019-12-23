@@ -29,7 +29,7 @@ func (s *sessionList) Add(newSession Session) {
 	s.list = append(s.list, newSession)
 }
 
-var Sessions *sessionList
+var Sessions = &sessionList{}
 
 type Session struct {
 	Conn          net.Conn

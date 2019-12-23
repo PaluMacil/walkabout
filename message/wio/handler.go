@@ -25,20 +25,24 @@ func (t TCPHandler) HandleConnection(conn net.Conn) {
 }
 
 func (t TCPHandler) receiveMessage(session message.Session) {
-	header := message.GetHeader(session.Conn)
-	messageBytes := make([]byte, header.Length)
-	session.Conn.Read(messageBytes)
-	buf := bytes.NewBuffer(messageBytes)
-	dec := gob.NewDecoder(buf)
-
-	// TCPHandler message type to specific handler
-	switch header.MessageType {
-	case message.TypeLoginRequest:
-		var m message.LoginRequest
-		if err := dec.Decode(m); err != nil {
-			log.Println("Could not decode LoginRequest message")
+	for {
+		header := message.GetHeader(session.Conn)
+		messageBytes := make([]byte, header.Length)
+		if _, err := session.Conn.Read(messageBytes); err != nil {
+			log.Println("Failed to read from connection: ", err)
 		}
-		log.Println("Got LoginRequest")
-		auth.DoLogin(t, session.Conn, m)
+		buf := bytes.NewBuffer(messageBytes)
+		dec := gob.NewDecoder(buf)
+
+		// TCPHandler message type to specific handler
+		switch header.MessageType {
+		case message.TypeLoginRequest:
+			var m message.LoginRequest
+			if err := dec.Decode(m); err != nil {
+				log.Println("Could not decode LoginRequest message: ", err)
+			}
+			log.Println("Got LoginRequest")
+			auth.DoLogin(t, session.Conn, m)
+		}
 	}
 }

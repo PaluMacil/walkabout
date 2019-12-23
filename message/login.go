@@ -24,7 +24,7 @@ func (l LoginRequest) Envelope(conn net.Conn) Envelope {
 		Raw: Raw{
 			Header: Header{
 				ProtocolVersion: CurrentProtocolVersion,
-				MessageType:     TypeLoginResponse,
+				MessageType:     TypeLoginRequest,
 				Length:          uint16(len(messageBytes)),
 			},
 			MessageBytes: messageBytes,

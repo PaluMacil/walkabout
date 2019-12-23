@@ -34,7 +34,9 @@ func StartServer(port string) *Server {
 
 func (s *Server) sendMail() {
 	for e := range s.queue {
-		e.Conn.Write(e.Raw.Bytes())
+		if _, err := e.Conn.Write(e.Raw.Bytes()); err != nil {
+			log.Println("Failed sending mail: ", err)
+		}
 	}
 }
 
