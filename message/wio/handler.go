@@ -3,6 +3,7 @@ package wio
 import (
 	"bytes"
 	"encoding/gob"
+	"fmt"
 	"github.com/PaluMacil/walkabout/message"
 	"github.com/PaluMacil/walkabout/server/auth"
 	"io"
@@ -30,11 +31,14 @@ func (t TCPHandler) receiveMessage(session message.Session) {
 		header := message.GetHeader(session.Conn)
 		messageBytes := make([]byte, header.Length)
 		_, err := session.Conn.Read(messageBytes)
-		if err != nil && err != io.EOF {
-			log.Println("Failed to read from connection: ", err)
-			break
-		} else if err == io.EOF {
-			log.Println("Connection closed for session ", session.SessionID.String())
+		if err != nil {
+			if err == io.EOF {
+				log.Println("Connection closed for session", session.SessionID.String())
+			} else {
+				log.Println("Failed to read from connection:", err)
+			}
+			fmt.Println("Removing session", session.SessionID.String())
+			message.Sessions.Remove(session.SessionID)
 			break
 		}
 		buf := bytes.NewBuffer(messageBytes)

@@ -29,6 +29,17 @@ func (s *sessionList) Add(newSession Session) {
 	s.list = append(s.list, newSession)
 }
 
+func (s *sessionList) Remove(sessionID uuid.UUID) {
+	s.m.Lock()
+	defer s.m.Unlock()
+	for i, session := range s.list {
+		if session.SessionID == sessionID {
+			s.list = append(s.list[:i], s.list[i+1:]...)
+			break
+		}
+	}
+}
+
 var Sessions = &sessionList{}
 
 type Session struct {
